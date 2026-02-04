@@ -59,7 +59,7 @@ def tokenize(code: str) -> Generator[Token, Any, None]:
         yield Token(kind, value, line_num, column)
 
 
-def cpp_tokenize(code: str) -> List[str]:
+def cpp_tokenize(code: str) -> Generator[list[Token], Any, None]:
     """
     The following regex accepts this kind of comment
 
@@ -71,6 +71,36 @@ def cpp_tokenize(code: str) -> List[str]:
     */
     """
     tok_regex = r"^ */\*\*\n( *\*( .*)\n)+"
+    line_num = 1
+    line_start = 0
+
+    def transform(line: str):
+        nonlocal line_num
+        lines = line.split("\n")
+
+        for e in lines[1:]:
+            line = "#" + e.strip()[1:]
+            line_num += 1
+            yield Token("COMMENT", line, line_num, column)
+
+    for mo in re.finditer(tok_regex, code, flags=re.MULTILINE):
+        value = mo.group()
+        column = mo.start() - line_start
+        yield list(transform(value))
+
+
+def txt_tokenize(code: str) -> Generator[list[Token], Any, None]:
+    """
+    The following regex accepts this kind of text blocks
+
+    --#
+    * test
+    * test
+    * test
+    * @brief test
+    #--
+    """
+    tok_regex = r"^ *--#\n(\*( .*)\n)+#--\n"
     line_num = 1
     line_start = 0
 

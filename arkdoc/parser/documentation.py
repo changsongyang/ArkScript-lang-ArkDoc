@@ -20,6 +20,7 @@ def deep_flatten(lst):
 class Source(Enum):
     ArkScript = 0
     Cpp = 1
+    Txt = 2
 
 
 @dataclass

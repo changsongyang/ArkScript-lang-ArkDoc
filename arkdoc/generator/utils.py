@@ -102,11 +102,24 @@ def from_cpp(doc: Documentation) -> spec.Function:
         describe(data, code),
     )
 
+def from_txt(doc: Documentation) -> spec.Function:
+    parameters = {"name": ""}
+    parameters.update(deepcopy(DEFAULT_KEYS))
+    data, code = extractor(parameters, doc)
+
+    return spec.Function(
+        data["name"],
+        f"({data['name']} {' '.join(e.name for e in data['param'])})",
+        describe(data, code),
+    )
+
 
 def documentation_to_specification(doc: Documentation) -> spec.Function:
     if doc.source == Source.ArkScript:
         return from_ark(doc)
     elif doc.source == Source.Cpp:
         return from_cpp(doc)
+    elif doc.source == Source.Txt:
+        return from_txt(doc)
     else:
         raise NotImplementedError

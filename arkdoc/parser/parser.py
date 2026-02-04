@@ -4,7 +4,7 @@ import re
 from typing import List
 
 from . import Documentation, Source
-from .tokenizer import cpp_tokenize, tree_from_tokens, tokenize, Token
+from .tokenizer import cpp_tokenize, txt_tokenize, tree_from_tokens, tokenize, Token
 from .. import logger
 
 
@@ -51,6 +51,9 @@ class Parser:
         elif self.filename.endswith(".cpp"):
             for node in self.ast:
                 yield Documentation(Source.Cpp, node, None)
+        elif self.filename.endswith(".txt"):
+            for node in self.ast:
+                yield Documentation(Source.Txt, node, None)
         else:
             raise NotImplementedError
 
@@ -66,6 +69,9 @@ class Parser:
                 self.ast += tree_from_tokens(tokens)
         elif self.filename.endswith(".cpp"):
             self.ast = list(cpp_tokenize(program))
+            logger.debug(self.ast)
+        elif self.filename.endswith(".txt"):
+            self.ast = list(txt_tokenize(program))
             logger.debug(self.ast)
         else:
             logger.error(f"Could not parse {self.filename}")

@@ -64,7 +64,7 @@ def compute(args) -> bool:
                             functions.append(name)
                         else:
                             functions.append(prefix + ":" + name)
-                    elif doc.source == Source.Cpp:
+                    elif doc.source == Source.Cpp or doc.source == Source.Txt:
                         data, _ = extractor({"name": ""}, doc)
                         functions.append(data["name"])
             print("\n".join(functions))
